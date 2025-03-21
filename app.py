@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,request
 
 app = Flask(__name__)
 
@@ -22,6 +22,34 @@ ideas = {
 @app.get("/ideaapp/api/v1/ideas")
 def get_all_ideas():
     return ideas
+
+
+
+'''
+Create a RESTful endpoint for creating a new idea 
+'''
+@app.post("/ideaapp/api/v1/ideas")
+def create_idea():
+    #logic to create a new idea 
+    try:
+        
+        #first read the request body
+        request_body=request.get_json() # this represents the request body passed by the user
+    
+        #check if the idea id passed is not present already
+        if request_body["id"] and request_body["id"] in ideas:
+            return "idea with the same id already present",400 # http status code = 400 (it tells the request is a bad request )
+    
+        #Insert the passed idea in the ideas dictionary
+        ideas[request_body['id']]=request_body#id and request body is put into ideas 
+    
+    
+        # return the response saying idea got saved
+        return "dea created and saved successfully",201
+    except KeyError:
+        return "id is missing ",400
+    except:
+        return "some internal server error",500
 
 if __name__ == "__main__":
     app.run(port=8080)
