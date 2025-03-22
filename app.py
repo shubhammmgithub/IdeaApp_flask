@@ -21,6 +21,18 @@ ideas = {
 # Create a RESTful endpoint for fetching all the ideas.
 @app.get("/ideaapp/api/v1/ideas")
 def get_all_ideas():
+    # I need to read the query param
+    idea_author=request.args.get('idea_author')
+    
+    if idea_author:
+        #filter the ideas created by this author 
+        idea_res={}
+        for key , value in ideas.items():
+            if value['idea_author']== idea_author:
+                idea_res[key] = value
+        return idea_res
+        
+    #Logic to support all the ideas and support query params
     return ideas
 
 
@@ -50,6 +62,26 @@ def create_idea():
         return "id is missing ",400
     except:
         return "some internal server error",500
-
+    
+    
+    '''
+    Endpoint to fetch idea based on the idea id
+    '''
+@app.get("/ideaapp/api/v1/ideas/<idea_id>")
+def get_idea_id(idea_id):
+        try:
+            if int(idea_id) in ideas:
+                return ideas[int(idea_id)],200
+            
+            else:
+                return"idea passed in not present ",400
+            
+        except:
+            return "something internal error happened ",500    
+        
+        
+        
+        
+        
 if __name__ == "__main__":
     app.run(port=8080)
